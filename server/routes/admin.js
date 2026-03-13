@@ -4,15 +4,15 @@ const adminController = require('../controllers/adminController');
 const verifyToken = require('../middlewares/verifyToken');
 const verifyAdmin = require('../middlewares/verifyAdmin');
 
-router.use(verifyToken, verifyAdmin);
+const adminOnly = [verifyToken, verifyAdmin];
 
-router.get('/admin/stats', adminController.getStats);
-router.get('/admin/users', adminController.getAllUsers);
-router.patch('/admin/users/:id/role', adminController.updateUserRole);
-router.patch('/admin/users/:id/premium', adminController.updateUserPremiumStatus);
-router.get('/admin/lessons', adminController.getAllLessons);
-router.delete('/admin/lessons/:id', adminController.deleteLesson);
-router.get('/admin/reports', adminController.getAllReports);
-router.delete('/admin/reports/:id', adminController.resolveReport);
+router.get('/admin/stats', adminOnly, adminController.getStats);
+router.get('/admin/users', adminOnly, adminController.getAllUsers);
+router.patch('/admin/users/:id/role', adminOnly, adminController.updateUserRole);
+router.patch('/admin/users/:id/premium', adminOnly, adminController.updateUserPremiumStatus);
+router.get('/admin/lessons', adminOnly, adminController.getAllLessons);
+router.delete('/admin/lessons/:id', adminOnly, adminController.deleteLesson);
+router.get('/admin/reports', adminOnly, adminController.getAllReports);
+router.delete('/admin/reports/:id', adminOnly, adminController.resolveReport);
 
 module.exports = router;
