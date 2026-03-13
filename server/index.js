@@ -33,10 +33,13 @@ app.use(cors({
             'http://localhost:5175',
             'https://assignment11-2.netlify.app',
             'https://assignment11-2-k4anmy2lj-reazul-islam02s-projects.vercel.app',
-            'https://digital-life-lessons-f2ob.vercel.app'
+            'https://digital-life-lessons-f2ob.vercel.app',
+            'https://zesty-medovik-503861.netlify.app',
+            'https://digital-life-lessons01.netlify.app'
         ];
+        const normalizedOrigin = origin?.replace(/\/$/, '');
         // Allow requests with no origin (e.g., mobile apps, Postman)
-        if (!origin || allowedOrigins.includes(origin)) {
+        if (!origin || allowedOrigins.includes(normalizedOrigin)) {
             callback(null, true);
         } else {
             callback(new Error(`CORS policy: origin ${origin} not allowed`));
