@@ -2,6 +2,15 @@
   publish = "dist"
   command = "npm run build"
 
+[build.environment]
+  VITE_API_URL = "https://a11server-psi.vercel.app/api"
+  VITE_FIREBASE_API_KEY = "AIzaSyA0qam-aH_ZwbXo7hJ7VRJHKPSVNJ8IbkE"
+  VITE_FIREBASE_AUTH_DOMAIN = "digitallifelessons-c0bed.firebaseapp.com"
+  VITE_FIREBASE_PROJECT_ID = "digitallifelessons-c0bed"
+  VITE_FIREBASE_STORAGE_BUCKET = "digitallifelessons-c0bed.firebasestorage.app"
+  VITE_FIREBASE_MESSAGING_SENDER_ID = "758557980152"
+  VITE_FIREBASE_APP_ID = "1:758557980152:web:26f4bd98692047bc19d20d"
+
 [[redirects]]
   from = "/*"
   to = "/index.html"
