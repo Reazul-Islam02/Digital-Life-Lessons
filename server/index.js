@@ -1,12 +1,12 @@
 const express = require('express');
 const cors = require('cors');
-const mongoose = require('mongoose');
 const path = require('path');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 const errorHandler = require('./utils/errorHandler');
 const AppError = require('./utils/appError');
+const connectDb = require('./utils/connectDb');
 require('dotenv').config({ path: path.resolve(__dirname, '.env') });
 
 const app = express();
@@ -87,6 +87,15 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res)
 // JSON body parser
 app.use(express.json({ limit: '10kb' }));
 
+app.use('/api', async (req, res, next) => {
+    try {
+        await connectDb();
+        next();
+    } catch (error) {
+        next(error);
+    }
+});
+
 // Routes
 const authRoutes = require('./routes/auth');
 const lessonRoutes = require('./routes/lessons');
@@ -110,16 +119,14 @@ app.all('/{*path}', (req, res, next) => {
 // Global Error Handler
 app.use(errorHandler);
 
-// MongoDB Connection
-const uri = process.env.MONGODB_URI;
-if (uri) {
-    mongoose.connect(uri)
-        .then(() => console.log('MongoDB connection established successfully'))
+if (!process.env.VERCEL) {
+    connectDb()
+        .then(() => {
+            app.listen(port, () => {
+                console.log(`Server is running on port: ${port}`);
+            });
+        })
         .catch(err => console.error('MongoDB connection error:', err));
-} else {
-    console.warn("MONGODB_URI not found in .env");
 }
 
-app.listen(port, () => {
-    console.log(`Server is running on port: ${port}`);
-});
+module.exports = app;
