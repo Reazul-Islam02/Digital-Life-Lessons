@@ -20,11 +20,24 @@ const connectDb = async () => {
 
     if (!cachedConnection.promise) {
         cachedConnection.promise = mongoose.connect(process.env.MONGODB_URI)
-            .then((mongooseInstance) => mongooseInstance);
+            .then((mongooseInstance) => mongooseInstance)
+            .catch((error) => {
+                cachedConnection.promise = null;
+                throw error;
+            });
     }
 
     cachedConnection.conn = await cachedConnection.promise;
     return cachedConnection.conn;
 };
 
-module.exports = connectDb;
+const getDbConnectionState = () => ({
+    readyState: mongoose.connection.readyState,
+    host: mongoose.connection.host || null,
+    name: mongoose.connection.name || null
+});
+
+module.exports = {
+    connectDb,
+    getDbConnectionState
+};

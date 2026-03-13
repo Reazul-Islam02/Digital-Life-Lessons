@@ -6,7 +6,7 @@ const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 const errorHandler = require('./utils/errorHandler');
 const AppError = require('./utils/appError');
-const connectDb = require('./utils/connectDb');
+const { connectDb, getDbConnectionState } = require('./utils/connectDb');
 require('dotenv').config({ path: path.resolve(__dirname, '.env') });
 
 const app = express();
@@ -86,6 +86,41 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res)
 
 // JSON body parser
 app.use(express.json({ limit: '10kb' }));
+
+app.get('/api/health', (req, res) => {
+    res.status(200).json({
+        status: 'success',
+        data: {
+            service: 'digital-life-lessons-server',
+            vercel: Boolean(process.env.VERCEL),
+            hasMongoUri: Boolean(process.env.MONGODB_URI),
+            db: getDbConnectionState()
+        }
+    });
+});
+
+app.get('/api/health/db', async (req, res, next) => {
+    try {
+        await connectDb();
+        res.status(200).json({
+            status: 'success',
+            data: {
+                connected: true,
+                db: getDbConnectionState()
+            }
+        });
+    } catch (error) {
+        res.status(503).json({
+            status: 'error',
+            message: 'Database connection failed',
+            data: {
+                connected: false,
+                hasMongoUri: Boolean(process.env.MONGODB_URI),
+                db: getDbConnectionState()
+            }
+        });
+    }
+});
 
 app.use('/api', async (req, res, next) => {
     try {
